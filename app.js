@@ -25,9 +25,8 @@ const scoreboard = [
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-app.set('view engine', 'ejs');
-
-app.get('/', (req, res) => {
+const checkDatabase = (req, res, next) => {
+  setInterval(() => {
     db.collection('competitors')
     .get()
     .then((querySnapshot) => {
@@ -35,12 +34,30 @@ app.get('/', (req, res) => {
         return { name: doc.data().name, sensor1: doc.data().sensor1, sensor2: doc.data().sensor2};
       });
       console.log(scoreboard)
-      res.render('scoreboard', { scoreboard });
+      req.scoreboard = scoreboard; // store the default scoreboard data in req object
+      next();
     })
     .catch((error) => {
       console.error('Error getting scores:', error);
-      res.render('error', { error });
+      const scoreboard = [{
+        name:'a', 
+        sensor1: -1,
+        sensor2: -2
+      }]
+      req.scoreboard = scoreboard; // store the default scoreboard data in req object
+      next();
     });
+  }, 1000); // check every 5 seconds
+};
+
+app.set('view engine', 'ejs');
+
+// use the checkDatabase middleware
+// app.use(checkDatabase);
+
+app.get('/', checkDatabase, (req, res) => {
+  const scoreboard = req.scoreboard; // retrieve the scoreboard data from req object
+  res.render('scoreboard', { scoreboard });
 });
 
 
