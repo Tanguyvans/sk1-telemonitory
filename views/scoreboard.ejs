@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+      }
+      
+      td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+      }
+      
+      tr:nth-child(even) {
+        background-color: #dddddd;
+      }
+      </style>
+    <meta charset="UTF-8">
+    <title>Scoreboard</title>
+  </head>
+  <body>
+    <h1>Scoreboard</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Name</th>
+          <th>Sensor1</th>
+          <th>Sensor2</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% scoreboard.forEach((player, index) => { %>
+          <tr>
+            <td><%= index+1 %></td>
+            <td><%= player.name %></td>
+            <td><%= player.sensor1 %></td>
+            <td><%= player.sensor2 %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </body>
+</html>
