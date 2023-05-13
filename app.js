@@ -1,8 +1,12 @@
 const express = require('express');
 const firebase = require('firebase');
+const bodyParser = require('body-parser');
 
 const app = express();
-const port = 3000;
+const extraInfoApp = express();
+const webAppPort = 3500;
+const extraInfoPort = 4000;
+const timer = 1000;
 
 // const firebaseConfig = {
 //     apiKey: "AIzaSyBWpQHxB7GbhRLJQDzf-zMPHBP-30-Ltjw",
@@ -32,7 +36,7 @@ const scoreboard = [
     { name: "Eve", sensor1: 100, sensor2:100  }
 ];
 
-const imageNumber = '8'; 
+const imageNumber = '0'; 
 
 const order = {
   'start':1,
@@ -45,6 +49,8 @@ const order = {
   'end':8
 }
 
+let startTime = null;
+
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
@@ -55,6 +61,7 @@ const checkDatabase = (req, res, next) => {
     .then((querySnapshot) => {
       const scoreboard = querySnapshot.docs.map((doc) => {
         return { 
+          id: doc.id,
           name: doc.data().name, 
           start: doc.data().start, 
           sensor1: doc.data().sensor1, 
@@ -66,7 +73,7 @@ const checkDatabase = (req, res, next) => {
           end: doc.data().end, 
         };
       });
-      console.log(scoreboard)
+      // console.log(scoreboard)
       req.scoreboard = scoreboard; // store the default scoreboard data in req object
       next();
     })
@@ -80,16 +87,13 @@ const checkDatabase = (req, res, next) => {
       req.scoreboard = scoreboard; // store the default scoreboard data in req object
       next();
     });
-  }, 10000); // check every 5 seconds
+  }, timer); // check every 5 seconds
 };
 app.set('view engine', 'ejs');
 
-// use the checkDatabase middleware
-// app.use(checkDatabase);
-
 app.get('/', checkDatabase, (req, res) => {
   const scoreboard = req.scoreboard; // retrieve the scoreboard data from req object
-
+  
   let post = 0;
 
   for (let key in scoreboard[0]) {
@@ -99,11 +103,181 @@ app.get('/', checkDatabase, (req, res) => {
   }
   const imageNumber = post.toString()
 
-  console.log(imageNumber)
+  if (imageNumber === '1' && !startTime) {
+    startTime = new Date().getTime();
+  }
+
+  if (imageNumber === '2' && scoreboard[0]['sensor1'].time === 0) {
+    let actualTime = new Date().getTime();
+    const sensor1Delta = actualTime - startTime;
+
+    db.collection('competitors')
+    .doc(scoreboard[0].id)
+    .update({
+      sensor1: {
+        detected: true,
+        time: sensor1Delta,
+        distance: scoreboard[0]['sensor1'].distance
+      },
+    })
+    .then(() => console.log('Sensor 1 delta updated'))
+    .catch((error) => console.error('Error updating sensor 1 delta:', error));
+  }
+
+  if (imageNumber === '3' && scoreboard[0]['sensor2'].time === 0) {
+    let actualTime = new Date().getTime();
+    const sensor2Delta = actualTime - startTime;
+
+    db.collection('competitors')
+    .doc(scoreboard[0].id)
+    .update({
+      sensor2: {
+        detected: true,
+        time: sensor2Delta,
+        distance: scoreboard[0]['sensor2'].distance
+      },
+    })
+    .then(() => console.log('Sensor 2 delta updated'))
+    .catch((error) => console.error('Error updating sensor 2 delta:', error));
+  }
+
+  if (imageNumber === '4' && scoreboard[0]['sensor3'].time === 0) {
+    let actualTime = new Date().getTime();
+    const sensor3Delta = actualTime - startTime;
+
+    db.collection('competitors')
+    .doc(scoreboard[0].id)
+    .update({
+      sensor3: {
+        detected: true,
+        time: sensor3Delta,
+        distance: scoreboard[0]['sensor3'].distance
+      },
+    })
+    .then(() => console.log('Sensor 3 delta updated'))
+    .catch((error) => console.error('Error updating sensor 3 delta:', error));
+  }
+
+  if (imageNumber === '5' && scoreboard[0]['sensor4'].time === 0) {
+    let actualTime = new Date().getTime();
+    const sensor4Delta = actualTime - startTime;
+
+    db.collection('competitors')
+    .doc(scoreboard[0].id)
+    .update({
+      sensor4: {
+        detected: true,
+        time: sensor4Delta,
+        distance: scoreboard[0]['sensor4'].distance
+      },
+    })
+    .then(() => console.log('Sensor 4 delta updated'))
+    .catch((error) => console.error('Error updating sensor 4 delta:', error));
+  }
+
+  if (imageNumber === '6' && scoreboard[0]['sensor5'].time === 0) {
+    let actualTime = new Date().getTime();
+    const sensor5Delta = actualTime - startTime;
+
+    db.collection('competitors')
+    .doc(scoreboard[0].id)
+    .update({
+      sensor5: {
+        detected: true,
+        time: sensor5Delta,
+        distance: scoreboard[0]['sensor5'].distance
+      },
+    })
+    .then(() => console.log('Sensor 5 delta updated'))
+    .catch((error) => console.error('Error updating sensor 5 delta:', error));
+  }
+
+  if (imageNumber === '7' && scoreboard[0]['sensor6'].time === 0) {
+    let actualTime = new Date().getTime();
+    const sensor6Delta = actualTime - startTime;
+
+    db.collection('competitors')
+    .doc(scoreboard[0].id)
+    .update({
+      sensor6: {
+        detected: true,
+        time: sensor6Delta,
+        distance: scoreboard[0]['sensor6'].distance
+      },
+    })
+    .then(() => console.log('Sensor 6 delta updated'))
+    .catch((error) => console.error('Error updating sensor 6 delta:', error));
+  }
+
+  if (imageNumber === '8' && scoreboard[0]['end'].time === 0) {
+    let actualTime = new Date().getTime();
+    const endDelta = actualTime - startTime;
+
+    db.collection('competitors')
+    .doc(scoreboard[0].id)
+    .update({
+      end: {
+        detected: true,
+        time: endDelta,
+        distance: scoreboard[0]['end'].distance
+      },
+    })
+    .then(() => console.log('end delta updated'))
+    .catch((error) => console.error('Error updating end delta:', error));
+  }
   res.render('scoreboard', { scoreboard, imageNumber });
 });
 
+app.post('/reset/:id', (req, res) => {
+  const competitorId = req.params.id;
+  db.collection('competitors')
+    .doc(competitorId)
+    .update({
+      start: { detected: false, time: 0 },
+      sensor1: { detected: false, time: 0, distance: 0 },
+      sensor2: { detected: false, time: 0, distance: 0 },
+      sensor3: { detected: false, time: 0, distance: 0 },
+      sensor4: { detected: false, time: 0, distance: 0 },
+      sensor5: { detected: false, time: 0, distance: 0 },
+      sensor6: { detected: false, time: 0, distance: 0 },
+      end: { detected: false, time: 0 },
+    })
+    .then(() => {
+      console.log(`Competitor ${competitorId} reset`);
+      res.redirect('/');
+    })
+    .catch((error) => {
+      console.error(`Error resetting competitor ${competitorId}:`, error);
+      res.status(500).send(`Error resetting competitor ${competitorId}`);
+    });
+});
 
-app.listen(port, () => {
-    console.log(`Server listening at http://localhost:${port}`);
+app.listen(webAppPort, () => {
+    console.log(`Server listening at http://localhost:${webAppPort}`);
+});
+
+
+extraInfoApp.use(express.urlencoded({ extended: true }));
+
+extraInfoApp.post('/', (req, res) => {
+  const { sensorId, distanceValue } = req.body;
+  const competitorId = "Fcs6LtbWlwdzspcVB6TY";
+  console.log(sensorId, distanceValue)
+  db.collection('competitors')
+    .doc(competitorId)
+    .update({
+      [`${sensorId}.distance`]: distanceValue
+    })
+    .then(() => {
+      console.log(`${sensorId} set distance`);
+      res.redirect('/');
+    })
+    .catch((error) => {
+      console.error(`Error setting distance from  ${sensorId}:`, error);
+      res.status(500).send(`Error setting competitor ${sensorId}`);
+    });
+});
+
+extraInfoApp.listen(extraInfoPort, () => {
+  console.log(`Server listening at http://localhost:${extraInfoPort}`);
 });
