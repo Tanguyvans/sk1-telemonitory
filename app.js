@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 
 const app = express();
 const extraInfoApp = express();
-const webAppPort = 3500;
+const webAppPort = 3000;
 const extraInfoPort = 4000;
 const timer = 1000;
 
@@ -278,6 +278,6 @@ extraInfoApp.post('/', (req, res) => {
     });
 });
 
-extraInfoApp.listen(extraInfoPort, () => {
-  console.log(`Server listening at http://localhost:${extraInfoPort}`);
+extraInfoApp.listen(extraInfoPort, '0.0.0.0', () => {
+  console.log(`Server listening at 0.0.0.0:${extraInfoPort}`);
 });
