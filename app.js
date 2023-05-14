@@ -18,14 +18,24 @@ const timer = 1000;
 //     measurementId: "G-2FTXPJXSYV"
 // };
 
+// const firebaseConfig = {
+//   apiKey: "AIzaSyDBOOaB-hXKzzDLBDSyW7GVoCMqQfid3c8",
+//   authDomain: "hackupc-402e1.firebaseapp.com",
+//   projectId: "hackupc-402e1",
+//   storageBucket: "hackupc-402e1.appspot.com",
+//   messagingSenderId: "550356291672",
+//   appId: "1:550356291672:web:a5816facf7bdf9a249fa2d",
+//   measurementId: "G-YX5JD9247F"
+// };
+
 const firebaseConfig = {
-  apiKey: "AIzaSyDBOOaB-hXKzzDLBDSyW7GVoCMqQfid3c8",
-  authDomain: "hackupc-402e1.firebaseapp.com",
-  projectId: "hackupc-402e1",
-  storageBucket: "hackupc-402e1.appspot.com",
-  messagingSenderId: "550356291672",
-  appId: "1:550356291672:web:a5816facf7bdf9a249fa2d",
-  measurementId: "G-YX5JD9247F"
+  apiKey: "AIzaSyBbaQAT6PDevDsg76lXqhhG4pKABersW1U",
+  authDomain: "hackupc-c707a.firebaseapp.com",
+  projectId: "hackupc-c707a",
+  storageBucket: "hackupc-c707a.appspot.com",
+  messagingSenderId: "823791851295",
+  appId: "1:823791851295:web:843f078dd2463f2a85022a",
+  measurementId: "G-D1EGHNJV2Y"
 };
 
 const scoreboard = [
@@ -95,7 +105,7 @@ app.get('/', checkDatabase, (req, res) => {
   const scoreboard = req.scoreboard; // retrieve the scoreboard data from req object
   
   let post = 0;
-
+  
   for (let key in scoreboard[0]) {
     if (scoreboard[0][key].detected && order[key] > post) {
       post = order[key];
