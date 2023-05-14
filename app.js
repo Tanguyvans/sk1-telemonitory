@@ -266,6 +266,7 @@ extraInfoApp.post('/', (req, res) => {
   db.collection('competitors')
     .doc(competitorId)
     .update({
+      [`${sensorId}.detected`]: true,
       [`${sensorId}.distance`]: distanceValue
     })
     .then(() => {
